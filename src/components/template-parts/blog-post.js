@@ -15,6 +15,15 @@ import {
 // Demo styles, see 'Styles' section below for some notes on use.
 import 'react-accessible-accordion/dist/fancy-example.css';
 
+const IsJsonString = ( str ) => {
+  try {
+      JSON.parse(str);
+  } catch (e) {
+      return false;
+  }
+  return true;
+}
+
 const TheAccordion = ({items}) => {
   let whatever = []
   for (let z = 0; z < items.accordion; z++) {
@@ -55,17 +64,21 @@ function BlogPost({ data }) {
       )}
 
       <div>
-        {JSON.parse(data.page.blocksJSON).map((ablock,i) => {
-          return (
-            <React.Fragment>
-              {ablock.name === 'acf/accordion' ? (
-                <TheAccordion items={ablock.attributes.data} />
-              ) : ( 
-                <div dangerouslySetInnerHTML={{ __html: ablock.saveContent }} />
-              )}
-            </React.Fragment>
-          )
-        })}
+        { IsJsonString(data.page.blocksJSON) &&
+          [JSON.parse(data.page.blocksJSON).map((ablock,i) => {
+              return (
+                <React.Fragment>
+                  {ablock.name === 'acf/accordion' ? (
+                    <TheAccordion items={ablock.attributes.data} />
+                  ) : ( 
+                    <div dangerouslySetInnerHTML={{ __html: ablock.saveContent }} />
+                  )}
+                </React.Fragment>
+              )
+            })
+          ]
+        }
+        
       </div>
 
       <br />
